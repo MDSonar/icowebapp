@@ -122,6 +122,7 @@
 
         if(accessToken){
             loginStatus.textContent = "Logged in with valid token.";
+            updateTokenTimer();
             return;
         }
         if(error){
@@ -146,6 +147,7 @@
 
                     localStorage.setItem("tokenExpiry",expirationTime);
                     window.history.replaceState({},document.title,REDIRECT_URI);
+                    updateTokenTimer();
                     accessToken = data.access_token;
                 }else{
                     loginStatus.textContent = "Token exchage failed:\n"+JSON.stringify(data,null,2);
