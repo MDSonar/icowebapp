@@ -16,6 +16,7 @@
         .collapsible{background-color: #3498db;color: white;cursor: pointer;padding: 12px;width: 100%;border: none;text-align: left;outline: none;font-size: 16px;border-radius: 5px;margin-top: 20px;transition: background-color 0.3s ease;}
         .collapsible:hover{background-color: #2980b9;}
         .content{padding: 10px 15px;display: none;overflow: hidden;background-color: #f9f9f9;border: 1px solid #ddd;border-top: none;border-radius: 0 0 5px 5px; margin-bottom: 10px;}
+        #tokenTimer{display: inline-block;background-color: #ecf0f1;color: #2980b9;padding: 10px 15px; margin-left: 15px;border-radius: 5px;font-size: 14px;box-shadow: 0 0 4px rgba(0,0,0,0.1);vertical-align: middle;}
     </style>
 </head>
 <body>
@@ -23,6 +24,7 @@
 <button class="collapsible">Authorization</button>
 <div class="content">
     <button onclick="logout()">Logout</button>
+    <span id="tokenTimer" >Checking token...</span>
     <pre id="loginStatus" class="data-container">Authenticating...</pre>    
 </div>
 
@@ -139,6 +141,10 @@
                 if(data.access_token){
                     localStorage.setItem("accessToken",data.access_token);
                     loginStatus.textContent = "Token received!";
+                    const expiresIn = data.expires_in;
+                    const expirationTime = Date.now() + expiresIn * 1000;
+
+                    localStorage.setItem("tokenExpiry",expirationTime);
                     window.history.replaceState({},document.title,REDIRECT_URI);
                     accessToken = data.access_token;
                 }else{
@@ -270,11 +276,33 @@
 
     checkAuth();
 
+    //Token time function
+    function updateTokenTimer(){
+        const expiry = parseInt(localStorage.getItem("tokenExpiry"),10);
+        const now = Date.now();
+        if(!expiry || expiry < now){
+            document.getElementById("tokenTimer").textContent = "Token expired.";
+            return;
+        }
+        const remaining = Math.floor((expiry-now)/1000);
+        const min = Math.floor(remaining/60);
+        const sec = remaining % 60;
+        document.getElementById("tokenTimer").textContent = `Token valid for: ${min}m ${sec}s`;
+    }
+
     document.querySelectorAll(".collapsible").forEach(btn =>{
         btn.addEventListener("click",function(){
             this.classList.toggle("active");
             let content = this.nextElementSibling;
-            content.style.display = content.style.display === "block" ? "none": "block";
+            //content.style.display = content.style.display === "block" ? "none": "block";
+
+            const wasHidden = content.style.display !== "block";
+            content.style.display = wasHidden ? "block" : "none";
+            
+            //when the authorization section opens, update token timer
+            if(this.textContent.includes("Authorization") && !wasHidden){
+                updateTokenTimer();
+            }
         });
     });
 
