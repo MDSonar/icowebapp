@@ -9,4 +9,6 @@ Task List :
 2. Crate a swtich called prety format or not , where whole page will transform the data representation to json or table format
 3. Read Historical Data
 4. Read Alarm
-5. Break down project files as now we are working in single html file 
+5. Break down project files as now we are working in single html file
+6. Look into the authorizationCode flow - ICONCIS Side we have two selection - Required client secret and Required PKCE - Implement both
+7. 
