@@ -13,6 +13,8 @@
         button:hover{background-color: #2980b9;}
         input[type="number"],select{padding: 10px;font-size: 14px;margin: 10px 10px 0 0;border: 1px solid #ccc;border-radius: 5px;outline:none;transition: border-color 0.3s ease, box-shadow 0.3s ease;width: 180px;}
         input[type="number"]:focus,select:focus{border-color: #3498db;box-shadow: 0 0 5px rgba(52, 152, 219,0.5);}
+        input[type="text"],select{padding: 10px;font-size: 14px;margin: 10px 10px 0 0;border: 1px solid #ccc;border-radius: 5px;outline:none;transition: border-color 0.3s ease, box-shadow 0.3s ease;width: 180px;}
+        input[type="text"]:focus,select:focus{border-color: #3498db;box-shadow: 0 0 5px rgba(52, 152, 219,0.5);}
         .collapsible{background-color: #3498db;color: white;cursor: pointer;padding: 12px;width: 100%;border: none;text-align: left;outline: none;font-size: 16px;border-radius: 5px;margin-top: 20px;transition: background-color 0.3s ease;}
         .collapsible:hover{background-color: #2980b9;}
         .content{padding: 10px 15px;display: none;overflow: hidden;background-color: #f9f9f9;border: 1px solid #ddd;border-top: none;border-radius: 0 0 5px 5px; margin-bottom: 10px;}
@@ -24,12 +26,11 @@
 <button class="collapsible">Authorization</button>
 <div class="content">
     <button onclick="logout()">Logout</button>
+    <button onclick="checkAuth()">Login</button>
     <span id="tokenTimer" >Checking token...</span>
-    <pre id="loginStatus" class="data-container">Authenticating...</pre>    
-</div>
-<div>
+    <pre id="loginStatus" class="data-container">Authenticating...</pre>
     <label><input type="radio" name="authType" value="secret" onclick="saveAuthType()"> Secret-based</label>
-    <label><input type="radio" name="authType" value="pkce" onclick="saveAuthType()" checked> PKCE</label>
+    <label><input type="radio" name="authType" value="pkce" onclick="saveAuthType()" checked> PKCE</label>    
 </div>
 
 <button class="collapsible">Manual Request GET POST</button>   
@@ -81,6 +82,7 @@
     const output2 = document.getElementById('output2');
     const loginStatus = document.getElementById('loginStatus');
 
+
     function logout(){
         localStorage.removeItem("accessToken");
         localStorage.removeItem("tokenExpiry");
@@ -92,13 +94,13 @@
         const selected = document.querySelector('input[name="authType"]:checked').value;
         localStorage.setItem('authType', selected);
     }
+   
 
-    
     //on page load read saved value and update UI
     window.addEventListener('DOMContentLoaded',()=>{
+        // Handle saved authType
         const savedType = localStorage.getItem('authType') || 'pkce';
         document.querySelector(`input[name="authType"][value="${savedType}"]`).checked = true;
-        checkAuth(); // call after setting the correct radio
     });
 
     //Token time function
@@ -286,7 +288,36 @@
                 headers:{'Authorization':'Bearer ' + accessToken}
             });
             const result = await response.json();
-            readDataSet.textContent = "Reading DataSets HTTPS GET:\n"+ JSON.stringify(result,null,2);
+            
+            //tabular 
+            if(!Array.isArray(result) || result.length === 0){
+                readDataSet.innerHTML="<p>No Data returend </p>"
+                return;
+            }
+            //get att unique keys across the dataset 
+            const allKeys = new Set();
+            result.forEach(row => Object.keys(row).forEach(key => allKeys.add(key)));
+            const headers = Array.from(allKeys);
+            //Build HTML Table 
+            let tableHtml = `<table border="1" cellspacing="0" cellpadding="5"><thead><tr>`;
+            headers.forEach(header => {
+                tableHtml += `<th>${header}</th>`
+            });
+            tableHtml += `</tr></thead><tbody>`;
+
+            result.forEach(row => {
+                tableHtml += `<tr>`;
+                    headers.forEach(header => {
+                        const cell = row[header] != null && row[header] !== undefined ? row[header] : '';
+                        tableHtml += `<td>${cell}</td>`;
+                    });
+                    tableHtml += `</tr>`;
+            });
+
+            tableHtml += `</tbody></table>`;
+            readDataSet.innerHTML = `<div>Reading DataSets HTTPS GET Dynamic Table: \n\n</div>${tableHtml}`;
+            //direct JSON
+            //readDataSet.textContent = "Reading DataSets HTTPS GET:\n"+ JSON.stringify(result,null,2);
         }catch(err){
             readDataSet.textContent="ReadDB Error:" + err;
         }
