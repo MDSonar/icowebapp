@@ -64,6 +64,11 @@
     <button onclick="readDb()">Refresh</button>
     <pre id="readDataSet" class="data-container">Waiting for data...</pre>
 </div>
+<button class="collapsible">Format</button>
+<div class="content">
+    <label><input type="radio" name="formatType" value="table" onclick="saveForamtType()"> Tabular</label>
+    <label><input type="radio" name="formatType" value="json" onclick="saveForamtType()" checked> JSON</label>    
+</div>
 
 <!--Config-->
 <script>
@@ -82,7 +87,6 @@
     const output2 = document.getElementById('output2');
     const loginStatus = document.getElementById('loginStatus');
 
-
     function logout(){
         localStorage.removeItem("accessToken");
         localStorage.removeItem("tokenExpiry");
@@ -94,13 +98,22 @@
         const selected = document.querySelector('input[name="authType"]:checked').value;
         localStorage.setItem('authType', selected);
     }
+
+    function saveForamtType(){
+        const selected = document.querySelector('input[name="formatType"]:checked').value;
+        localStorage.setItem('formatType',selected);
+    }
    
+    const formatType = localStorage.getItem('formatType');
 
     //on page load read saved value and update UI
     window.addEventListener('DOMContentLoaded',()=>{
         // Handle saved authType
         const savedType = localStorage.getItem('authType') || 'pkce';
         document.querySelector(`input[name="authType"][value="${savedType}"]`).checked = true;
+        //Handle saved format type 
+        const savedFormatType = localStorage.getItem('formatType') || 'pkce';
+        document.querySelector(`input[name="formatType"][value="${savedFormatType}"]`).checked = true;
     });
 
     //Token time function
@@ -289,35 +302,37 @@
             });
             const result = await response.json();
             
-            //tabular 
-            if(!Array.isArray(result) || result.length === 0){
-                readDataSet.innerHTML="<p>No Data returend </p>"
-                return;
+            if(formatType === 'table'){
+                //tabular 
+                if(!Array.isArray(result) || result.length === 0){
+                    readDataSet.innerHTML="<p>No Data returend </p>"
+                    return;
+                }
+                //get att unique keys across the dataset 
+                const allKeys = new Set();
+                result.forEach(row => Object.keys(row).forEach(key => allKeys.add(key)));
+                const headers = Array.from(allKeys);
+                //Build HTML Table 
+                let tableHtml = `<table border="1" cellspacing="0" cellpadding="5"><thead><tr>`;
+                headers.forEach(header => {
+                    tableHtml += `<th>${header}</th>`
+                });
+                tableHtml += `</tr></thead><tbody>`;
+
+                result.forEach(row => {
+                    tableHtml += `<tr>`;
+                        headers.forEach(header => {
+                            const cell = row[header] != null && row[header] !== undefined ? row[header] : '';
+                            tableHtml += `<td>${cell}</td>`;
+                        });
+                        tableHtml += `</tr>`;
+                });
+
+                tableHtml += `</tbody></table>`;
+                readDataSet.innerHTML = `<div>Reading DataSets HTTPS GET Dynamic Table: \n\n</div>${tableHtml}`;
+            }else{ //JSON Format 
+             readDataSet.textContent = "Reading DataSets HTTPS GET:\n"+ JSON.stringify(result,null,2);
             }
-            //get att unique keys across the dataset 
-            const allKeys = new Set();
-            result.forEach(row => Object.keys(row).forEach(key => allKeys.add(key)));
-            const headers = Array.from(allKeys);
-            //Build HTML Table 
-            let tableHtml = `<table border="1" cellspacing="0" cellpadding="5"><thead><tr>`;
-            headers.forEach(header => {
-                tableHtml += `<th>${header}</th>`
-            });
-            tableHtml += `</tr></thead><tbody>`;
-
-            result.forEach(row => {
-                tableHtml += `<tr>`;
-                    headers.forEach(header => {
-                        const cell = row[header] != null && row[header] !== undefined ? row[header] : '';
-                        tableHtml += `<td>${cell}</td>`;
-                    });
-                    tableHtml += `</tr>`;
-            });
-
-            tableHtml += `</tbody></table>`;
-            readDataSet.innerHTML = `<div>Reading DataSets HTTPS GET Dynamic Table: \n\n</div>${tableHtml}`;
-            //direct JSON
-            //readDataSet.textContent = "Reading DataSets HTTPS GET:\n"+ JSON.stringify(result,null,2);
         }catch(err){
             readDataSet.textContent="ReadDB Error:" + err;
         }
@@ -338,22 +353,26 @@
             })
         });
         const data = await response.json();
+        if(formatType === 'table'){
+            let html = "<table border='1' cellpadding='6' cellspacing='0' style='border-collapse:collapse;'>";
+            html += "<tr><th>Point Name</th><th>Value</th><th>Timestamp</th><th>Quality</th></tr>";
 
-        let html = "<table border='1' cellpadding='6' cellspacing='0' style='border-collapse:collapse;'>";
-        html += "<tr><th>Point Name</th><th>Value</th><th>Timestamp</th><th>Quality</th></tr>";
+            data.forEach(point => {
+                const time = new Date(point.timestamp).toLocaleString(); // Fixed 'Data' typo and method name
+                html += `<tr>
+                            <td>${point.pointName}</td> 
+                            <td>${point.value}</td>
+                            <td>${time}</td>
+                            <td>${point.quality}</td>
+                        </tr>`;  // Closed tr properly
+            });
 
-        data.forEach(point => {
-            const time = new Date(point.timestamp).toLocaleString(); // Fixed 'Data' typo and method name
-            html += `<tr>
-                        <td>${point.pointName}</td> 
-                        <td>${point.value}</td>
-                        <td>${time}</td>
-                        <td>${point.quality}</td>
-                    </tr>`;  // Closed tr properly
-        });
-
-        html += "</table>";
-        output2.innerHTML = html;
+            html += "</table>";
+            output2.innerHTML = html;
+         }else{
+        //Direct Json 
+         output2.textContent = "Reading Live Data HTTPS POST: \n" + JSON.stringify(data,null,2);
+        }
     } catch (err) {
         output2.textContent = 'Live Fetch Error:\n' + err;
     }
