@@ -28,8 +28,8 @@
     <pre id="loginStatus" class="data-container">Authenticating...</pre>    
 </div>
 <div>
-    <label><input type="radio" name="authType" value="secret"> Secret-based</label>
-    <label><input type="radio" name="authType" value="pkce" checked> PKCE</label>
+    <label><input type="radio" name="authType" value="secret" onclick="saveAuthType()"> Secret-based</label>
+    <label><input type="radio" name="authType" value="pkce" onclick="saveAuthType()" checked> PKCE</label>
 </div>
 
 <button class="collapsible">Manual Request GET POST</button>   
@@ -87,6 +87,20 @@
         window.location.href = REDIRECT_URI;
     }
 
+    //save authenticatoin type
+    function saveAuthType(){
+        const selected = document.querySelector('input[name="authType"]:checked').value;
+        localStorage.setItem('authType', selected);
+    }
+
+    
+    //on page load read saved value and update UI
+    window.addEventListener('DOMContentLoaded',()=>{
+        const savedType = localStorage.getItem('authType') || 'pkce';
+        document.querySelector(`input[name="authType"][value="${savedType}"]`).checked = true;
+        checkAuth(); // call after setting the correct radio
+    });
+
     //Token time function
     function updateTokenTimer(){
         const expiry = parseInt(localStorage.getItem("tokenExpiry"),10);
@@ -132,8 +146,8 @@
 
     //Authentication
     function checkAuth(){
-        const authType = document.querySelector('input[name="authType"]:checked')?.value || 'pkce';
-        
+        //const authType = document.querySelector('input[name="authType"]:checked')?.value || 'pkce';
+        const authType = localStorage.getItem('authType') || 'pkce';
         const urlParams = new URLSearchParams(window.location.search);
         const code = urlParams.get('code');
         const error = urlParams.get('error');
