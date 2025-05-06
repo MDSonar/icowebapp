@@ -19,6 +19,10 @@
         .collapsible:hover{background-color: #2980b9;}
         .content{padding: 10px 15px;display: none;overflow: hidden;background-color: #f9f9f9;border: 1px solid #ddd;border-top: none;border-radius: 0 0 5px 5px; margin-bottom: 10px;}
         #tokenTimer{display: inline-block;background-color: #ecf0f1;color: #2980b9;padding: 10px 15px; margin-left: 15px;border-radius: 5px;font-size: 14px;box-shadow: 0 0 4px rgba(0,0,0,0.1);vertical-align: middle;}
+        .date-picker-container { display: flex; flex-direction: column;align-items: flex-start; gap: 10px; max-width: 400px; margin: 20px 0; font-family: 'Segoe UI', sans-serif; font-size: 14px; color: #333;}
+        .date-picker-container label{ font-weight: 600;}
+        .date-picker {padding: 10px; border: 1px solid #ccc; border-radius: 14px; font-size: 14px; background-color: #f9f9f9; transition: all 0.3s ease;}
+        .date-picker:focus { outline: none; border-color: #0078d7; background-color: #fff; box-shadow: 0 0 5px rgba(0,120,215,0.3);}
     </style>
 </head>
 <body>
@@ -67,6 +71,13 @@
 
 <button class="collapsible">Read Historical Data</button>
 <div class="content">
+    <div class ="date-picker-container">
+        <label for="startDateInput">Start Date & Time:</label>
+        <input type="datetime-local" id="startDateInput" class="date-picker">
+        
+        <label for="endDateInput">End Date & Time:</label>
+        <input type="datetime-local" id="endDateInput" class="date-picker">
+    </div>
     <button onclick="fetchHHData()">Refresh</button>
     <pre id="getHHData" class="data-container">Waiting for data...</pre>
 </div>
@@ -377,8 +388,19 @@
 
     async function fetchHHData(){
         try{
+            const startRaw = document.getElementById("startDateInput").value;
+            const endRaw = document.getElementById("endDateInput").value;
+            const startDate = formatDateTimeLocal(startRaw);
+            const endDate = formatDateTimeLocal(endRaw);
+
+            if(!startDate || !endRaw){ 
+                getHHData.textContent = "Enter both Start and End date.";
+                return;
+            }
+
+            const pointName = "hh:\\Configuration\\TestAPI:HHACStatic";
             const point = encodeURIComponent("hh:\\Configuration\\TestAPI:HHACStatic");
-            const response = await fetch(`https://coe-win11-1/fwxapi/rest/history?pointName=${point}&StartDate=2025-05-03T12:00:00-0400&EndDate=2025-06-05T12:00:00-0400`,{
+            const response = await fetch(`https://coe-win11-1/fwxapi/rest/history?pointName=${point}&StartDate=${startDate}&EndDate=${endDate}`,{
                 headers:{'Authorization':'Bearer ' + accessToken}
             });
             const data = await response.json();
@@ -406,13 +428,28 @@
                 });
 
                 tableHtml += `</tbody></table>`;
-                getHHData.innerHTML = `<div>Reading Raw Historical Data HTTPS GET: \n\n</div>${tableHtml}`;
+                getHHData.innerHTML = `<div>Reading Raw Historical Data HTTPS GET: ${pointName} \n\n</div>${tableHtml}`;
             }else{
                 getHHData.textContent = 'Reading Hyper Historical values (HTTPS GET):\n' + JSON.stringify(data,null,2);
             }
         }catch(err){
             getHHData.textContent = 'GET Error: \n'+err;
         }
+    }
+
+    //additional required functions 
+    function formatDateTimeLocal (inputValue){
+        if(!inputValue) return null;
+
+        const date = new Date(inputValue);
+        const offsetMinutes = date.getTimezoneOffset();
+        const offsetSign = offsetMinutes > 0 ? "-" : "+";
+        const pad = n => String(Math.abs(n)).padStart(2,'0');
+        const offsetHours = pad(Math.floor(Math.abs(offsetMinutes)/60));
+        const offsetMins = pad(Math.abs(offsetMinutes)%60);
+        const offsetStr = `${offsetSign}${offsetHours}${offsetMins}`;
+
+        return date.toISOString().slice(0,19) + offsetStr;
     }
 
     let refreshInterval = 5000;
@@ -426,6 +463,18 @@
     fetchLiveData();
 
     checkAuth();
+
+    //just 
+    function setDefaultDate(){
+        const now = new Date();
+        const yesterday = new Date(now);
+        yesterday.setDate(now.getDate()-1);
+        const formatInput = d => d.toISOString().slice(0,16);
+        document.getElementById('startDateInput').value = formatInput(yesterday);
+        document.getElementById('endDateInput').value = formatInput(now);
+    }
+
+    window.onload = setDefaultDate;
 
     //Related to UI 
     document.querySelectorAll(".collapsible").forEach(btn =>{
