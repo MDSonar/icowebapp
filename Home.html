@@ -25,8 +25,8 @@
 
 <button class="collapsible">Authorization</button>
 <div class="content">
-    <button onclick="logout()">Logout</button>
-    <button onclick="checkAuth()">Login</button>
+    <button onclick="logout()">Get New access token</button>
+    <button onclick="checkAuth()">Check Authentication</button>
     <span id="tokenTimer" >Checking token...</span>
     <pre id="loginStatus" class="data-container">Authenticating...</pre>
     <label><input type="radio" name="authType" value="secret" onclick="saveAuthType()"> Secret-based</label>
@@ -37,7 +37,7 @@
 <div class="content">
     <button onclick="getData()">Fetch via GET</button>
     <button onclick="postData()">Fetch via POST</button>
-    <pre id="output1" class="data-container">Press any button for data</pre>
+    <pre id="getPostOut" class="data-container">Press any button for data</pre>
 </div>
 
 <button class="collapsible">Live Data</button>
@@ -49,14 +49,14 @@
         <option value="5000" selected>5 s</option>
         <option value="10000">10 s</option>
     </select>
-        <pre id="output2" class="data-container">Waiting for data...</pre>
+        <pre id="liveDataOut" class="data-container">Waiting for data...</pre>
 </div>
 
 <button class="collapsible">Write POST </button>
 <div class="content">
     <input type="number" id="writeValue" placeholder="Enter Value">
     <button onclick="writeData()">Write</button>
-    <pre id="output3" class="data-container"></pre>
+    <pre id="writeOutput" class="data-container"></pre>
 </div>
 
 <button class="collapsible">Read DataSets</button>
@@ -64,6 +64,13 @@
     <button onclick="readDb()">Refresh</button>
     <pre id="readDataSet" class="data-container">Waiting for data...</pre>
 </div>
+
+<button class="collapsible">Read Historical Data</button>
+<div class="content">
+    <button onclick="fetchHHData()">Refresh</button>
+    <pre id="getHHData" class="data-container">Waiting for data...</pre>
+</div>
+
 <button class="collapsible">Format</button>
 <div class="content">
     <label><input type="radio" name="formatType" value="table" onclick="saveForamtType()"> Tabular</label>
@@ -83,9 +90,13 @@
 
     let accessToken = localStorage.getItem("accessToken") || "";
 
-    const output1 = document.getElementById('output1');
-    const output2 = document.getElementById('output2');
+    const getPostOut = document.getElementById('getPostOut');
+    const liveDataOut = document.getElementById('liveDataOut');
     const loginStatus = document.getElementById('loginStatus');
+    const formatType = localStorage.getItem('formatType');
+    const writeOutput = document.getElementById('writeOutput');
+    const readDataSet = document.getElementById('readDataSet');
+    const getHHData = document.getElementById('getHHData');
 
     function logout(){
         localStorage.removeItem("accessToken");
@@ -98,24 +109,12 @@
         const selected = document.querySelector('input[name="authType"]:checked').value;
         localStorage.setItem('authType', selected);
     }
-
+    //save format type
     function saveForamtType(){
         const selected = document.querySelector('input[name="formatType"]:checked').value;
         localStorage.setItem('formatType',selected);
     }
    
-    const formatType = localStorage.getItem('formatType');
-
-    //on page load read saved value and update UI
-    window.addEventListener('DOMContentLoaded',()=>{
-        // Handle saved authType
-        const savedType = localStorage.getItem('authType') || 'pkce';
-        document.querySelector(`input[name="authType"][value="${savedType}"]`).checked = true;
-        //Handle saved format type 
-        const savedFormatType = localStorage.getItem('formatType') || 'pkce';
-        document.querySelector(`input[name="formatType"][value="${savedFormatType}"]`).checked = true;
-    });
-
     //Token time function
     function updateTokenTimer(){
         const expiry = parseInt(localStorage.getItem("tokenExpiry"),10);
@@ -129,7 +128,6 @@
         const sec = remaining % 60;
         document.getElementById("tokenTimer").textContent = `Token valid for: ${min}m ${sec}s`;
     }
-
 
     //PKCE Code flow 
     function base64urlencode(str) {
@@ -237,15 +235,16 @@
         }
     }
 
+    //API Interaction 
     async function getData(){
     try{
         const response = await fetch('https://coe-win11-1/fwxapi/rest/data/?pointName=@sim64:Float.Random(1,-50.0,50.0,0).Value',{
             headers:{'Authorization':'Bearer ' + accessToken}
         });
         const data = await response.json();
-        output1.textContent = 'Reading real-time values (HTTP GET):\n'+JSON.stringify(data,null,2);
+        getPostOut.textContent = 'Reading real-time values (HTTP GET):\n'+JSON.stringify(data,null,2);
     }catch(err){
-        output1.textContent = 'GET Error:\n'+err;
+        getPostOut.textContent = 'GET Error:\n'+err;
     }
     }
 
@@ -262,13 +261,12 @@
             })
         });
         const data = await response.json();
-        output1.textContent = 'Reading real-time values (HTTP POST):\n' + JSON.stringify(data,null,2);
+        getPostOut.textContent = 'Reading real-time values (HTTP POST):\n' + JSON.stringify(data,null,2);
     }catch(err){
-        output1.textContent = 'POST Error:\n'+err;
+        getPostOut.textContent = 'POST Error:\n'+err;
     }
     }
 
-    const writeOutput = document.getElementById('output3');
     async function writeData(){
         const value = document.getElementById('writeValue').value;
         if(value === ''){
@@ -294,7 +292,6 @@
         }
     }
 
-    const readDataSet = document.getElementById('readDataSet');
     async function readDb(){
         try{
             const response = await fetch('https://coe-win11-1/fwxapi/rest/dataset?PointName=db:Northwind.Orders',{
@@ -368,18 +365,59 @@
             });
 
             html += "</table>";
-            output2.innerHTML = html;
+            liveDataOut.innerHTML = html;
          }else{
         //Direct Json 
-         output2.textContent = "Reading Live Data HTTPS POST: \n" + JSON.stringify(data,null,2);
+         liveDataOut.textContent = "Reading Live Data HTTPS POST: \n" + JSON.stringify(data,null,2);
         }
     } catch (err) {
-        output2.textContent = 'Live Fetch Error:\n' + err;
+        liveDataOut.textContent = 'Live Fetch Error:\n' + err;
     }
+    }
+
+    async function fetchHHData(){
+        try{
+            const point = encodeURIComponent("hh:\\Configuration\\TestAPI:HHACStatic");
+            const response = await fetch(`https://coe-win11-1/fwxapi/rest/history?pointName=${point}&StartDate=2025-05-03T12:00:00-0400&EndDate=2025-06-05T12:00:00-0400`,{
+                headers:{'Authorization':'Bearer ' + accessToken}
+            });
+            const data = await response.json();
+            if(formatType === 'table'){
+                if(!Array.isArray(data) || data.length === 0){
+                    getHHData.textContent = "<p>No data returned</p>"
+                    return;
+                }
+                const allKeys = new Set();
+                data.forEach(row => Object.keys(row).forEach(key =>allKeys.add(key)));
+                const headers = Array.from(allKeys);
+                let tableHtml = `<table border="1" cellspacing="0" cellpadding="5"><thead><tr>`;
+                headers.forEach(header => {
+                    tableHtml += `<th>${header}</th>`
+                });
+                tableHtml += `</tr></thead><tbody>`;
+
+                data.forEach(row => {
+                    tableHtml += `<tr>`;
+                        headers.forEach(header => {
+                            const cell = row[header] != null && row[header] !== undefined ? row[header] : '';
+                            tableHtml += `<td>${cell}</td>`; 
+                        });
+                        tableHtml += `</tr>`;
+                });
+
+                tableHtml += `</tbody></table>`;
+                getHHData.innerHTML = `<div>Reading Raw Historical Data HTTPS GET: \n\n</div>${tableHtml}`;
+            }else{
+                getHHData.textContent = 'Reading Hyper Historical values (HTTPS GET):\n' + JSON.stringify(data,null,2);
+            }
+        }catch(err){
+            getHHData.textContent = 'GET Error: \n'+err;
+        }
     }
 
     let refreshInterval = 5000;
     let intervalId = null;
+
     document.getElementById('refreshRate').addEventListener('change', function () {
         refreshInterval = parseInt(this.value);
         clearInterval(intervalId);
@@ -389,7 +427,7 @@
 
     checkAuth();
 
-    
+    //Related to UI 
     document.querySelectorAll(".collapsible").forEach(btn =>{
         btn.addEventListener("click",function(){
             this.classList.toggle("active");
@@ -405,6 +443,17 @@
             }
         });
     });
+
+    //on page load read saved value and update UI
+    window.addEventListener('DOMContentLoaded',()=>{
+        // Handle saved authType
+        const savedType = localStorage.getItem('authType') || 'pkce';
+        document.querySelector(`input[name="authType"][value="${savedType}"]`).checked = true;
+        //Handle saved format type 
+        const savedFormatType = localStorage.getItem('formatType') || 'pkce';
+        document.querySelector(`input[name="formatType"][value="${savedFormatType}"]`).checked = true;
+    });
+
 
 </script>
 </body>
