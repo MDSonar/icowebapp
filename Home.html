@@ -2,91 +2,337 @@
 <html>
 <head>
     <title>FWXAPI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        body{font-family: Arial, Helvetica, sans-serif; padding: 20px;}
-        .data-container{margin-top: 20px;background: #f4f4f4; padding: 15px;border-radius: 8px;box-shadow: 0 0 5px rgba(0,0,0,0.1);}
-        h3 {color: #2c3e50;}
-        table{width: 100%;text-align: left;background-color: #fff;}
-        th{background-color: #3498db;}
-        td,th{ padding: 8px;}
-        button{background-color: #3498db;color: white;border: none;padding: 10px 20px;margin: 10px 10px 0 0;border-radius: 5px;cursor: pointer;font-size: 14px;transition: background-color 0.3s ease;}
-        button:hover{background-color: #2980b9;}
-        input[type="number"],select{padding: 10px;font-size: 14px;margin: 10px 10px 0 0;border: 1px solid #ccc;border-radius: 5px;outline:none;transition: border-color 0.3s ease, box-shadow 0.3s ease;width: 180px;}
-        input[type="number"]:focus,select:focus{border-color: #3498db;box-shadow: 0 0 5px rgba(52, 152, 219,0.5);}
-        input[type="text"],select{padding: 10px;font-size: 14px;margin: 10px 10px 0 0;border: 1px solid #ccc;border-radius: 5px;outline:none;transition: border-color 0.3s ease, box-shadow 0.3s ease;width: 180px;}
-        input[type="text"]:focus,select:focus{border-color: #3498db;box-shadow: 0 0 5px rgba(52, 152, 219,0.5);}
-        .collapsible{background-color: #3498db;color: white;cursor: pointer;padding: 12px;width: 100%;border: none;text-align: left;outline: none;font-size: 16px;border-radius: 5px;margin-top: 20px;transition: background-color 0.3s ease;}
-        .collapsible:hover{background-color: #2980b9;}
-        .content{padding: 10px 15px;display: none;overflow: hidden;background-color: #f9f9f9;border: 1px solid #ddd;border-top: none;border-radius: 0 0 5px 5px; margin-bottom: 10px;}
-        #tokenTimer{display: inline-block;background-color: #ecf0f1;color: #2980b9;padding: 10px 15px; margin-left: 15px;border-radius: 5px;font-size: 14px;box-shadow: 0 0 4px rgba(0,0,0,0.1);vertical-align: middle;}
-        .date-picker-container { display: flex; flex-direction: column;align-items: flex-start; gap: 10px; max-width: 400px; margin: 20px 0; font-family: 'Segoe UI', sans-serif; font-size: 14px; color: #333;}
-        .date-picker-container label{ font-weight: 600;}
-        .date-picker {padding: 10px; border: 1px solid #ccc; border-radius: 14px; font-size: 14px; background-color: #f9f9f9; transition: all 0.3s ease;}
-        .date-picker:focus { outline: none; border-color: #0078d7; background-color: #fff; box-shadow: 0 0 5px rgba(0,120,215,0.3);}
+        :root {
+            --primary: #2563eb;
+            --primary-hover: #1d4ed8;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text-secondary: #64748b;
+            --success: #22c55e;
+            --error: #ef4444;
+            --radius: 8px;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: var(--background);
+            color: var(--text);
+            padding: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Improved Collapsible Sections */
+        .collapsible {
+            background: var(--surface);
+            color: var(--text);
+            padding: 1rem 1.5rem;
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            margin-top: 1rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s ease;
+            box-shadow: var(--shadow);
+        }
+
+        .collapsible:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .collapsible::after {
+            content: '>';
+            transition: transform 0.2s ease;
+        }
+
+        .collapsible.active::after {
+            transform: rotate(90deg);
+        }
+
+        .content {
+            padding: 0;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: var(--surface);
+            border-radius: 0 0 var(--radius) var(--radius);
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .content-inner {
+            padding: 1.5rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .empty-state{
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-secondary);
+        }
+        /* Modern Button Styles */
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius);
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Enhanced Data Containers */
+        .data-container {
+            background: var(--surface);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border: 1px solid var(--border);
+            box-shadow: var(--shadow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .data-container::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: var(--primary);
+        }
+
+        /* Modern Input Fields */
+        input, select {
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            transition: all 0.2s ease;
+            width: 100%;
+            max-width: 300px;
+            background: var(--surface);
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+            outline: none;
+        }
+
+        /* Token Timer Progress */
+        #tokenTimer {
+            background: var(--surface);
+            padding: 0.75rem 1.5rem;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            border: 2px solid var(--primary);
+            font-weight: 500;
+        }
+
+        .token-progress {
+            width: 100px;
+            height: 6px;
+            background: var(--border);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .token-progress-bar {
+            height: 100%;
+            background: var(--primary);
+            transition: width 1s linear;
+        }
+
+        /* Enhanced Table Styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        th, td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            background: var(--primary);
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover td {
+            background: rgba(59,130,246,0.05);
+        }
+
+        /* Loading States */
+        .loading {
+            position: relative;
+            opacity: 0.7;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            right: 1rem;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            .collapsible {
+                padding: 1rem;
+            }
+
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+
+            input, select {
+                max-width: none;
+            }
+        }
     </style>
 </head>
 <body>
 
 <button class="collapsible">Authorization</button>
 <div class="content">
-    <button onclick="logout()">Get New access token</button>
-    <button onclick="checkAuth()">Check Authentication</button>
-    <span id="tokenTimer" >Checking token...</span>
-    <pre id="loginStatus" class="data-container">Authenticating...</pre>
-    <label><input type="radio" name="authType" value="secret" onclick="saveAuthType()"> Secret-based</label>
-    <label><input type="radio" name="authType" value="pkce" onclick="saveAuthType()" checked> PKCE</label>    
+    <div class="content-inner">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button onclick="logout()">Get New access token</button>
+            <button onclick="checkAuth()">Check Authentication</button>
+            <div id="tokenTimer">
+                <span >Token Status</span>
+                <div class="token-progress">
+                    <div class="token-progress-bar" style="width: 100%;"></div>
+                </div>
+            </div>
+            <pre id="loginStatus" class="data-container">Authenticating...</pre>
+            <label><input type="radio" name="authType" value="secret" onclick="saveAuthType()"> Secret-based</label>
+            <label><input type="radio" name="authType" value="pkce" onclick="saveAuthType()" checked> PKCE</label>    
+        </div>
+    </div>
 </div>
 
 <button class="collapsible">Manual Request GET POST</button>   
 <div class="content">
-    <button onclick="getData()">Fetch via GET</button>
-    <button onclick="postData()">Fetch via POST</button>
-    <pre id="getPostOut" class="data-container">Press any button for data</pre>
+    <div class="content-inner">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button onclick="getData()">Fetch via GET</button>
+            <button onclick="postData()">Fetch via POST</button>
+            <pre id="getPostOut" class="data-container">Press any button for data</pre>
+        </div>
+    </div>
 </div>
 
 <button class="collapsible">Live Data</button>
 <div class="content">
-    <label for="refreshRate">Refresh</label>
-    <select id="refreshRate">
-        <option value="200">200 ms</option>
-        <option value="1000">1 s</option>
-        <option value="5000" selected>5 s</option>
-        <option value="10000">10 s</option>
-    </select>
-        <pre id="liveDataOut" class="data-container">Waiting for data...</pre>
+    <div class="content-inner">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <label for="refreshRate">Refresh</label>
+            <select id="refreshRate">
+                <option value="200">200 ms</option>
+                <option value="1000">1 s</option>
+                <option value="5000" selected>5 s</option>
+                <option value="10000">10 s</option>
+            </select>
+                <pre id="liveDataOut" class="data-container">Waiting for data...</pre>
+        </div>
+    </div>
 </div>
 
 <button class="collapsible">Write POST </button>
 <div class="content">
-    <input type="number" id="writeValue" placeholder="Enter Value">
-    <button onclick="writeData()">Write</button>
-    <pre id="writeOutput" class="data-container"></pre>
+    <div class="content-inner">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <input type="number" id="writeValue" placeholder="Enter Value">
+            <button onclick="writeData()">Write</button>
+            <pre id="writeOutput" class="data-container"></pre>
+        </div>
+    </div>
 </div>
 
 <button class="collapsible">Read DataSets</button>
 <div class="content">    
-    <button onclick="readDb()">Refresh</button>
-    <pre id="readDataSet" class="data-container">Waiting for data...</pre>
+    <div class="content-inner">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button onclick="readDb()">Refresh</button>
+            <pre id="readDataSet" class="data-container">Waiting for data...</pre>
+        </div>
+    </div>
 </div>
 
 <button class="collapsible">Read Historical Data</button>
 <div class="content">
-    <div class ="date-picker-container">
-        <label for="startDateInput">Start Date & Time:</label>
-        <input type="datetime-local" id="startDateInput" class="date-picker">
-        
-        <label for="endDateInput">End Date & Time:</label>
-        <input type="datetime-local" id="endDateInput" class="date-picker">
+    <div class="content-inner">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <div class ="date-picker-container">
+                <label for="startDateInput">Start Date & Time:</label>
+                <input type="datetime-local" id="startDateInput" class="date-picker">
+                
+                <label for="endDateInput">End Date & Time:</label>
+                <input type="datetime-local" id="endDateInput" class="date-picker">
+            </div>
+            <input type="text" id="hhPointName" placeholder="Enter Point Name">
+            <button onclick="fetchHHData()">Refresh</button>
+            <pre id="getHHData" class="data-container">Waiting for data...</pre>
+        </div>
     </div>
-    <input type="text" id="hhPointName" placeholder="Enter Point Name">
-    <button onclick="fetchHHData()">Refresh</button>
-    <pre id="getHHData" class="data-container">Waiting for data...</pre>
 </div>
 
 <button class="collapsible">Format</button>
 <div class="content">
-    <label><input type="radio" name="formatType" value="table" onclick="saveForamtType()"> Tabular</label>
-    <label><input type="radio" name="formatType" value="json" onclick="saveForamtType()" checked> JSON</label>    
+    <div class="content-inner">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <label><input type="radio" name="formatType" value="table" onclick="saveForamtType()"> Tabular</label>
+            <label><input type="radio" name="formatType" value="json" onclick="saveForamtType()" checked> JSON</label>
+        </div>
+    </div>    
 </div>
 
 <!--Config-->
@@ -131,11 +377,20 @@
     function updateTokenTimer(){
         const expiry = parseInt(localStorage.getItem("tokenExpiry"),10);
         const now = Date.now();
+        const progressBar = document.querySelector('.token-progress-bar');
+
         if(!expiry || expiry < now){
             document.getElementById("tokenTimer").textContent = "Token expired.";
+            progressBar.style.width = '0%';
             return;
         }
-        const remaining = Math.floor((expiry-now)/1000);
+        
+        const total = expiry - (now - 1000);
+        const remaining = expiry - now;
+        const percentage = (remaining/total)* 100;
+
+        progressBar.style.width = `${percentage}%`
+
         const min = Math.floor(remaining/60);
         const sec = remaining % 60;
         document.getElementById("tokenTimer").textContent = `Token valid for: ${min}m ${sec}s`;
@@ -485,16 +740,11 @@
     document.querySelectorAll(".collapsible").forEach(btn =>{
         btn.addEventListener("click",function(){
             this.classList.toggle("active");
-            let content = this.nextElementSibling;
-            //content.style.display = content.style.display === "block" ? "none": "block";
-
-            const wasHidden = content.style.display !== "block";
-            content.style.display = wasHidden ? "block" : "none";
+            const content = this.nextElementSibling;
+            content.style.maxHeight = content.style.maxHeight
+                ? null
+                : content.scrollHeight + "px";
             
-            //when the authorization section opens, update token timer
-            if(this.textContent.includes("Authorization") && !wasHidden){
-                updateTokenTimer();
-            }
         });
     });
 
