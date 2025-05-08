@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FWXAPI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/styles.css">
+</head>
+<body>
+<div class="container">
+    <div class="global-refresh">
+            <select id="globalRefreshRate">
+                <option value="200">200 ms</option>
+                <option value="1000">1 sec</option>
+                <option value="5000">5 sec</option>
+                <option value="10000">10 sec</option>
+                <option value="30000">30 sec</option>
+                <option value="60000">1 min</option>
+            </select>
+    </div>
+    
+    <button class="collapsible">Authorization</button>
+    <div class="content"> <!--Authentication-->
+        <div class="content-inner">
+            <div class="input-group">
+                <button onclick="logout()">Get New access token</button>
+                <button onclick="checkAuth()">Check Authentication</button>
+                <div id="tokenTimer">
+                    <span >Token Status</span>
+                    <div class="token-progress">
+                        <div class="token-progress-bar" style="width: 100%;"></div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label><input type="radio" name="authType" value="secret" onclick="saveAuthType()"> Secret-based</label>
+                    <label><input type="radio" name="authType" value="pkce" onclick="saveAuthType()" checked> PKCE</label>    
+                </div>
+            </div>
+                <pre id="loginStatus" class="data-container">Authenticating...</pre>
+        </div>
+    </div>
+
+    <button class="collapsible">Manual Request GET POST</button>   
+    <div class="content"> <!--GET POST-->
+        <div class="content-inner">
+            <div class="input-group">
+                <button onclick="getData()">Fetch via GET</button>
+                <button onclick="postData()">Fetch via POST</button>
+            </div>
+            <pre id="getPostOut" class="data-container">Press any button for data</pre>
+        </div>
+    </div>
+
+    <button class="collapsible">Live Data</button>
+    <div class="content"> <!--Live Data-->
+        <div class="content-inner">
+            <pre id="liveDataOut" class="data-container">Waiting for data...</pre>
+        </div>
+    </div>
+
+    <button class="collapsible">Write POST </button>
+    <div class="content"> <!--Write -->
+        <div class="content-inner">
+            <div class="input-group">
+                <input type="text" id="writePointName" placeholder="Enter PointName">
+                <input type="number" id="writeValue" placeholder="Enter Value">
+                <button onclick="writeData()">Write</button>
+            </div>
+            <pre id="writeOutput" class="data-container"></pre>
+        </div>
+    </div>
+
+    <button class="collapsible">Read DataSets</button>
+    <div class="content"> <!--Read DataSetsts-->    
+        <div class="content-inner">
+            <div class="input-group">
+                <button onclick="readDb()">Refresh</button>
+            </div>
+            <pre id="readDataSet" class="data-container">Waiting for data...</pre>
+        </div>
+    </div>
+
+    <button class="collapsible">Read Historical Data</button>
+    <div class="content"> <!--Read Historical Data-->
+        <div class="content-inner">
+            <div class="input-group">
+                <div class ="date-picker-container">
+                    <label for="startDateInput">Start Date & Time:</label>
+                    <input type="datetime-local" id="startDateInput" class="date-picker">
+                    
+                    <label for="endDateInput">End Date & Time:</label>
+                    <input type="datetime-local" id="endDateInput" class="date-picker">
+                </div>
+                <input type="text" id="hhPointName" placeholder="Enter Point Name">
+                <button onclick="fetchHHData()">Refresh</button>
+            </div>
+            <pre id="getHHData" class="data-container">Waiting for data...</pre>
+        </div>
+    </div>
+
+    <button class="collapsible">Format</button>
+    <div class="content"> <!--Format-->
+        <div class="content-inner">
+            <div class="input-group">
+                <label><input type="radio" name="formatType" value="table" onclick="saveForamtType()"> Tabular</label>
+                <label><input type="radio" name="formatType" value="json" onclick="saveForamtType()" checked> JSON</label>
+            </div>
+        </div>    
+    </div>
+
+</div>
+
+<!--Config-->
+<script src="scripts/scripts.js"></script>
+</body>
+</html>
