@@ -249,6 +249,7 @@
     <div class="content"> <!--Write -->
         <div class="content-inner">
             <div class="input-group">
+                <input type="text" id="writePointName" placeholder="Enter PointName">
                 <input type="number" id="writeValue" placeholder="Enter Value">
                 <button onclick="writeData()">Write</button>
             </div>
@@ -499,7 +500,11 @@
     }
 
     async function writeData(){
+        const pointName = document.getElementById('writePointName').value;
         const value = document.getElementById('writeValue').value;
+        if(value === ''){
+            writeOutput.textContent = 'Enter Point Name...';
+        }
         if(value === ''){
             writeOutput.textContent = 'Entre value...';
             return;
@@ -512,7 +517,7 @@
                     'Authorization':'Bearer ' + accessToken
                 },
                 body: JSON.stringify([{
-                    "PointName": "ac:TestAPI/SimStaticLong",
+                    "PointName": pointName,
                     "Value": parseFloat(value)
                 }])
             });
