@@ -4,7 +4,7 @@
     <title>FWXAPI</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        :root {
+         :root {
             --primary: #2563eb;
             --primary-hover: #1d4ed8;
             --background: #f8fafc;
@@ -16,13 +16,19 @@
             --error: #ef4444;
             --radius: 8px;
             --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         body {
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
             background: var(--background);
             color: var(--text);
-            padding: 2rem;
+            padding: 1rem;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+
+        .container {
             max-width: 1200px;
             margin: 0 auto;
         }
@@ -31,16 +37,16 @@
         .collapsible {
             background: var(--surface);
             color: var(--text);
-            padding: 1rem 1.5rem;
+            padding: 1rem;
             width: 100%;
             border: 1px solid var(--border);
             border-radius: var(--radius);
-            margin-top: 1rem;
+            margin-top: 0.5rem;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            transition: all 0.2s ease;
+            transition: var(--transition);
             box-shadow: var(--shadow);
         }
 
@@ -48,6 +54,7 @@
             background: var(--primary);
             color: white;
             border-color: var(--primary);
+            transform: translateY(-1px);
         }
 
         .collapsible::after {
@@ -60,39 +67,47 @@
         }
 
         .content {
-            padding: 0;
             max-height: 0;
             overflow: hidden;
             transition: max-height 0.3s ease-out;
             background: var(--surface);
             border-radius: 0 0 var(--radius) var(--radius);
-            margin-bottom: 1rem;
-            box-shadow: var(--shadow);
+            margin-bottom: 0.5rem;
         }
 
         .content-inner {
-            padding: 1.5rem;
-            border-top: 1px solid var(--border);
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
         }
 
-        .empty-state{
-            text-align: center;
-            padding: 2rem;
-            color: var(--text-secondary);
+        /* Modern Form Elements */
+        .input-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
         }
-        /* Modern Button Styles */
+
+        input, select, button {
+            padding: 0.75rem;
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            transition: var(--transition);
+            font-size: 0.9rem;
+        }
+
         button {
             background: var(--primary);
             color: white;
             border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: var(--radius);
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
+            box-shadow: var(--shadow);
         }
 
         button:hover {
@@ -100,72 +115,26 @@
             transform: translateY(-1px);
         }
 
-        button:active {
-            transform: translateY(0);
-        }
-
-        /* Enhanced Data Containers */
+        /* Data Containers */
         .data-container {
             background: var(--surface);
             border-radius: var(--radius);
-            padding: 1.5rem;
-            margin: 1rem 0;
+            padding: 1rem;
+            margin: 0.5rem 0;
             border: 1px solid var(--border);
             box-shadow: var(--shadow);
-            position: relative;
-            overflow: auto;
-            max-width: 100%;
-        }
-
-        .data-container table{
-            min-width: 600px;
             overflow-x: auto;
-            white-space: nowrap;
         }
 
-        .data-container > p {
-            margin: 0;
-            padding: 1rem;
-            color: var(--text-secondary);
-        }
-
-        .data-container::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background: var(--primary);
-        }
-
-        /* Modern Input Fields */
-        input, select {
-            padding: 0.75rem;
-            border: 2px solid var(--border);
-            border-radius: var(--radius);
-            transition: all 0.2s ease;
-            width: 100%;
-            max-width: 300px;
-            background: var(--surface);
-        }
-
-        input:focus, select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
-            outline: none;
-        }
-
-        /* Token Timer Progress */
+        /* Token Timer */
         #tokenTimer {
             background: var(--surface);
-            padding: 0.75rem 1.5rem;
-            border-radius: 20px;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
             display: inline-flex;
             align-items: center;
-            gap: 1rem;
+            gap: 0.75rem;
             border: 2px solid var(--primary);
-            font-weight: 500;
         }
 
         .token-progress {
@@ -182,177 +151,149 @@
             transition: width 1s linear;
         }
 
-        /* Enhanced Table Styling */
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            max-width: 100%;
+            margin: 1rem 0;
+            border-radius: var(--radius);
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
             background: var(--surface);
-            border-radius: var(--radius);
-            overflow: hidden;
-            box-shadow: var(--shadow);
             min-width: 600px;
-        }
-
-        .table-container{
-            overflow-x: auto;
-            max-width: 100%;
-            margin: 1rem 0;
         }
 
         th, td {
             padding: 0.75rem;
             text-align: left;
             border-bottom: 1px solid var(--border);
+            white-space: nowrap;
         }
 
         th {
             background: var(--primary);
             color: white;
             font-weight: 600;
-        }
-
-        tr:hover td {
-            background: rgba(59,130,246,0.05);
-        }
-
-        /* Loading States */
-        .loading {
-            position: relative;
-            opacity: 0.7;
-        }
-
-        .loading::after {
-            content: '';
-            position: absolute;
-            right: 1rem;
-            width: 1rem;
-            height: 1rem;
-            border: 2px solid var(--border);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+            position: sticky;
+            top: 0;
         }
 
         /* Responsive Design */
-        @media (max-width: 768px) {
+        @media (min-width: 768px) {
             body {
-                padding: 1rem;
+                padding: 2rem;
             }
-
-            .collapsible {
-                padding: 1rem;
+            .content-inner {
+                padding: 1.5rem;
             }
-
-            button {
-                width: 100%;
-                justify-content: center;
-            }
-
-            input, select {
-                max-width: none;
+            .input-group {
+                gap: 1rem;
             }
         }
     </style>
 </head>
 <body>
-
-<button class="collapsible">Authorization</button>
-<div class="content">
-    <div class="content-inner">
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <button onclick="logout()">Get New access token</button>
-            <button onclick="checkAuth()">Check Authentication</button>
-            <div id="tokenTimer">
-                <span >Token Status</span>
-                <div class="token-progress">
-                    <div class="token-progress-bar" style="width: 100%;"></div>
+<div class="container">
+    <button class="collapsible">Authorization</button>
+    <div class="content"> <!--Authentication-->
+        <div class="content-inner">
+            <div class="input-group">
+                <button onclick="logout()">Get New access token</button>
+                <button onclick="checkAuth()">Check Authentication</button>
+                <div id="tokenTimer">
+                    <span >Token Status</span>
+                    <div class="token-progress">
+                        <div class="token-progress-bar" style="width: 100%;"></div>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label><input type="radio" name="authType" value="secret" onclick="saveAuthType()"> Secret-based</label>
+                    <label><input type="radio" name="authType" value="pkce" onclick="saveAuthType()" checked> PKCE</label>    
                 </div>
             </div>
-            <pre id="loginStatus" class="data-container">Authenticating...</pre>
-            <label><input type="radio" name="authType" value="secret" onclick="saveAuthType()"> Secret-based</label>
-            <label><input type="radio" name="authType" value="pkce" onclick="saveAuthType()" checked> PKCE</label>    
+                <pre id="loginStatus" class="data-container">Authenticating...</pre>
         </div>
     </div>
-</div>
 
-<button class="collapsible">Manual Request GET POST</button>   
-<div class="content">
-    <div class="content-inner">
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <button onclick="getData()">Fetch via GET</button>
-            <button onclick="postData()">Fetch via POST</button>
+    <button class="collapsible">Manual Request GET POST</button>   
+    <div class="content"> <!--GET POST-->
+        <div class="content-inner">
+            <div class="input-group">
+                <button onclick="getData()">Fetch via GET</button>
+                <button onclick="postData()">Fetch via POST</button>
+            </div>
             <pre id="getPostOut" class="data-container">Press any button for data</pre>
         </div>
     </div>
-</div>
 
-<button class="collapsible">Live Data</button>
-<div class="content">
-    <div class="content-inner">
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <label for="refreshRate">Refresh</label>
-            <select id="refreshRate">
-                <option value="200">200 ms</option>
-                <option value="1000">1 s</option>
-                <option value="5000" selected>5 s</option>
-                <option value="10000">10 s</option>
-            </select>
-                <pre id="liveDataOut" class="data-container">Waiting for data...</pre>
+    <button class="collapsible">Live Data</button>
+    <div class="content"> <!--Live Data-->
+        <div class="content-inner">
+            <div class="input-group">
+                <label for="refreshRate">Refresh</label>
+                <select id="refreshRate">
+                    <option value="200">200 ms</option>
+                    <option value="1000">1 s</option>
+                    <option value="5000" selected>5 s</option>
+                    <option value="10000">10 s</option>
+                </select>
+            </div>
+            <pre id="liveDataOut" class="data-container">Waiting for data...</pre>
         </div>
     </div>
-</div>
 
-<button class="collapsible">Write POST </button>
-<div class="content">
-    <div class="content-inner">
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <input type="number" id="writeValue" placeholder="Enter Value">
-            <button onclick="writeData()">Write</button>
+    <button class="collapsible">Write POST </button>
+    <div class="content"> <!--Write -->
+        <div class="content-inner">
+            <div class="input-group">
+                <input type="number" id="writeValue" placeholder="Enter Value">
+                <button onclick="writeData()">Write</button>
+            </div>
             <pre id="writeOutput" class="data-container"></pre>
         </div>
     </div>
-</div>
 
-<button class="collapsible">Read DataSets</button>
-<div class="content">    
-    <div class="content-inner">
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <button onclick="readDb()">Refresh</button>
+    <button class="collapsible">Read DataSets</button>
+    <div class="content"> <!--Read DataSetsts-->    
+        <div class="content-inner">
+            <div class="input-group">
+                <button onclick="readDb()">Refresh</button>
+            </div>
             <pre id="readDataSet" class="data-container">Waiting for data...</pre>
         </div>
     </div>
-</div>
 
-<button class="collapsible">Read Historical Data</button>
-<div class="content">
-    <div class="content-inner">
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <div class ="date-picker-container">
-                <label for="startDateInput">Start Date & Time:</label>
-                <input type="datetime-local" id="startDateInput" class="date-picker">
-                
-                <label for="endDateInput">End Date & Time:</label>
-                <input type="datetime-local" id="endDateInput" class="date-picker">
+    <button class="collapsible">Read Historical Data</button>
+    <div class="content"> <!--Read Historical Data-->
+        <div class="content-inner">
+            <div class="input-group">
+                <div class ="date-picker-container">
+                    <label for="startDateInput">Start Date & Time:</label>
+                    <input type="datetime-local" id="startDateInput" class="date-picker">
+                    
+                    <label for="endDateInput">End Date & Time:</label>
+                    <input type="datetime-local" id="endDateInput" class="date-picker">
+                </div>
+                <input type="text" id="hhPointName" placeholder="Enter Point Name">
+                <button onclick="fetchHHData()">Refresh</button>
             </div>
-            <input type="text" id="hhPointName" placeholder="Enter Point Name">
-            <button onclick="fetchHHData()">Refresh</button>
             <pre id="getHHData" class="data-container">Waiting for data...</pre>
         </div>
     </div>
-</div>
 
-<button class="collapsible">Format</button>
-<div class="content">
-    <div class="content-inner">
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <label><input type="radio" name="formatType" value="table" onclick="saveForamtType()"> Tabular</label>
-            <label><input type="radio" name="formatType" value="json" onclick="saveForamtType()" checked> JSON</label>
-        </div>
-    </div>    
+    <button class="collapsible">Format</button>
+    <div class="content"> <!--Format-->
+        <div class="content-inner">
+            <div class="input-group">
+                <label><input type="radio" name="formatType" value="table" onclick="saveForamtType()"> Tabular</label>
+                <label><input type="radio" name="formatType" value="json" onclick="saveForamtType()" checked> JSON</label>
+            </div>
+        </div>    
+    </div>
+
 </div>
 
 <!--Config-->
@@ -405,15 +346,18 @@
             return;
         }
         
-        const total = expiry - (now - 1000);
         const remaining = expiry - now;
-        const percentage = (remaining/total)* 100;
+        const totalDuration = parseInt(localStorage.getItem("tokenDuration"), 10);
 
-        progressBar.style.width = `${percentage}%`
+        if(totalDuration > 0){
+            const percentage = (remaining/totalDuration) * 100;
+            progressBar.style.width = `${Math.max(0, percentage)}%`;
+        }
 
-        const min = Math.floor(remaining/60);
-        const sec = remaining % 60;
-        document.getElementById("tokenTimer").textContent = `Token valid for: ${min}m ${sec}s`;
+        const minutes = Math.floor(remaining/60000);
+        const seconds = Math.floor((remaining%60000)/1000);
+
+        document.getElementById("tokenTimer").textContent = `Token Valid for: ${minutes}m ${seconds.toString().padStart(2, '0')}s`;
     }
 
     //PKCE Code flow 
@@ -593,27 +537,8 @@
                     return;
                 }
                 //get att unique keys across the dataset 
-                const allKeys = new Set();
-                result.forEach(row => Object.keys(row).forEach(key => allKeys.add(key)));
-                const headers = Array.from(allKeys);
-                //Build HTML Table 
-                let tableHtml = `<table border="1" cellspacing="0" cellpadding="5"><thead><tr>`;
-                headers.forEach(header => {
-                    tableHtml += `<th>${header}</th>`
-                });
-                tableHtml += `</tr></thead><tbody>`;
-
-                result.forEach(row => {
-                    tableHtml += `<tr>`;
-                        headers.forEach(header => {
-                            const cell = row[header] != null && row[header] !== undefined ? row[header] : '';
-                            tableHtml += `<td>${cell}</td>`;
-                        });
-                        tableHtml += `</tr>`;
-                });
-
-                tableHtml += `</tbody></table>`;
-                readDataSet.innerHTML = `<div class="table-container">Reading DataSets HTTPS GET Dynamic Table: \n\n</div>${tableHtml}`;
+                
+                readDataSet.innerHTML = `<div class="table-container">Reading DataSets HTTPS GET Dynamic Table: \n\n</div>${generateTableHtml(result)}`;
             }else{ //JSON Format 
              readDataSet.textContent = "Reading DataSets HTTPS GET:\n"+ JSON.stringify(result,null,2);
             }
@@ -638,21 +563,7 @@
         });
         const data = await response.json();
         if(formatType === 'table'){
-            let html = "<table border='1' cellpadding='6' cellspacing='0' style='border-collapse:collapse;'>";
-            html += "<tr><th>Point Name</th><th>Value</th><th>Timestamp</th><th>Quality</th></tr>";
-
-            data.forEach(point => {
-                const time = new Date(point.timestamp).toLocaleString(); // Fixed 'Data' typo and method name
-                html += `<tr>
-                            <td>${point.pointName}</td> 
-                            <td>${point.value}</td>
-                            <td>${time}</td>
-                            <td>${point.quality}</td>
-                        </tr>`;  // Closed tr properly
-            });
-
-            html += "</table>";
-            liveDataOut.innerHTML = html;
+            liveDataOut.innerHTML = `<div>Reading Live data:\n\n</div>${generateTableHtml(data)}`;
          }else{
         //Direct Json 
          liveDataOut.textContent = "Reading Live Data HTTPS POST: \n" + JSON.stringify(data,null,2);
@@ -689,26 +600,7 @@
                     getHHData.textContent = "<p>No data returned</p>"
                     return;
                 }
-                const allKeys = new Set();
-                data.forEach(row => Object.keys(row).forEach(key =>allKeys.add(key)));
-                const headers = Array.from(allKeys);
-                let tableHtml = `<table border="1" cellspacing="0" cellpadding="5"><thead><tr>`;
-                headers.forEach(header => {
-                    tableHtml += `<th>${header}</th>`
-                });
-                tableHtml += `</tr></thead><tbody>`;
-
-                data.forEach(row => {
-                    tableHtml += `<tr>`;
-                        headers.forEach(header => {
-                            const cell = row[header] != null && row[header] !== undefined ? row[header] : '';
-                            tableHtml += `<td>${cell}</td>`; 
-                        });
-                        tableHtml += `</tr>`;
-                });
-
-                tableHtml += `</tbody></table>`;
-                getHHData.innerHTML = `<div>Reading Raw Historical Data HTTPS GET: ${hhPoint} \n\n</div>${tableHtml}`;
+                getHHData.innerHTML = `<div>Reading Raw Historical Data HTTPS GET: ${hhPoint} \n\n</div>${generateTableHtml(data)}`;
             }else{
                 getHHData.textContent = 'Reading Hyper Historical values (HTTPS GET):\n' + JSON.stringify(data,null,2);
             }
@@ -730,6 +622,30 @@
         const offsetStr = `${offsetSign}${offsetHours}${offsetMins}`;
 
         return date.toISOString().slice(0,19) + offsetStr;
+    }
+
+    function generateTableHtml(data){
+        const allKeys = new Set();
+                data.forEach(row => Object.keys(row).forEach(key => allKeys.add(key)));
+                const headers = Array.from(allKeys);
+                //Build HTML Table 
+                let tableHtml = `<table border="1" cellspacing="0" cellpadding="5"><thead><tr>`;
+                headers.forEach(header => {
+                    tableHtml += `<th>${header}</th>`
+                });
+                tableHtml += `</tr></thead><tbody>`;
+
+                data.forEach(row => {
+                    tableHtml += `<tr>`;
+                        headers.forEach(header => {
+                            const cell = row[header] != null && row[header] !== undefined ? row[header] : '';
+                            tableHtml += `<td>${cell}</td>`;
+                        });
+                        tableHtml += `</tr>`;
+                });
+
+                tableHtml += `</tbody></table>`;
+                return tableHtml;
     }
 
     let refreshInterval = 5000;
