@@ -1,7 +1,7 @@
     const hostname = 'coe-win11-1';
     const CLIENT_ID = 'TestRESTApi';
     const CLIENT_SECRET = '123456789'; //AuthorizationCode flow: client secret 
-    const REDIRECT_URI = 'https://coe-win11-1/AnyGlass/Home.html';
+    const REDIRECT_URI = 'https://mdsonar.github.io/icowebapp/testApi/src/index.html';
     const AUTH_URL = 'https://coe-win11-1/fwxserverweb/security/connect/authorize';
     const TOKEN_URL = 'https://coe-win11-1/fwxserverweb/security/connect/token';
     const SCOPE = 'fwxserver offline_access';
