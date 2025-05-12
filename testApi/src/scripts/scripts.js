@@ -1,11 +1,11 @@
-    const hostName = 'coe-win11-1';
+    const hostname = 'coe-win11-1';
     const CLIENT_ID = 'TestRESTApi';
     const CLIENT_SECRET = '123456789'; //AuthorizationCode flow: client secret 
-    const REDIRECT_URI = 'https://`${hostName}`/AnyGlass/Home.html';
-    const AUTH_URL = 'https://`${hostName}`/fwxserverweb/security/connect/authorize';
-    const TOKEN_URL = 'https://`${hostName}`/fwxserverweb/security/connect/token';
+    const REDIRECT_URI = 'https://`${hostname}`/AnyGlass/Home.html';
+    const AUTH_URL = 'https://`${hostname}`/fwxserverweb/security/connect/authorize';
+    const TOKEN_URL = 'https://`${hostname}`/fwxserverweb/security/connect/token';
     const SCOPE = 'fwxserver offline_access';
-    const API_URL = 'https://`${hostName}`/fwxapi/rest';
+    const API_URL = 'https://`${hostname}`/fwxapi/rest';
 
     let accessToken = localStorage.getItem("accessToken") || "";
 
