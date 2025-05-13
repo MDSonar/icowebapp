@@ -185,6 +185,7 @@
     try{
         const response = await fetch('https://coe-win11-1/fwxapi/rest/data',{
             method: 'POST',
+            mode: 'cors',
             headers:{
             'Content-Type':'application/json',
             'Authorization':'Bearer ' + accessToken
