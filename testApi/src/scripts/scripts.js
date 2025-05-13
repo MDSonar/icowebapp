@@ -431,6 +431,6 @@
         const savedType = localStorage.getItem('authType') || 'pkce';
         document.querySelector(`input[name="authType"][value="${savedType}"]`).checked = true;
         //Handle saved format type 
-        const savedFormatType = localStorage.getItem('formatType') || 'pkce';
+        const savedFormatType = localStorage.getItem('formatType') || 'table';
         document.querySelector(`input[name="formatType"][value="${savedFormatType}"]`).checked = true;
     });
