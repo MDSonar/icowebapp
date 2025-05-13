@@ -170,7 +170,10 @@
     async function getData(){
     try{
         const response = await fetch('https://coe-win11-1/fwxapi/rest/data/?pointName=@sim64:Float.Random(1,-50.0,50.0,0).Value',{
-            headers:{'Access-Control-Allow-Origin':'*','Access-Control-Allow-Methods':'GET,POST,OPTIONS','Authorization':'Bearer ' + accessToken}
+            headers:{
+                'Access-Control-Allow-Origin':'*',
+                'Access-Control-Allow-Methods':'GET,POST,OPTIONS',
+                'Authorization':'Bearer ' + accessToken}
         });
         const data = await response.json();
         getPostOut.textContent = 'Reading real-time values (HTTP GET):\n'+JSON.stringify(data,null,2);
