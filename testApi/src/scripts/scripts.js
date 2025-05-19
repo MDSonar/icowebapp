@@ -1,11 +1,11 @@
-    const hostname = 'coe-win11-1';
-    const CLIENT_ID = 'TestRESTApi';
+    const hostname = 'MS-PC';
+    const CLIENT_ID = 'TestApi';
     const CLIENT_SECRET = '123456789'; //AuthorizationCode flow: client secret 
     const REDIRECT_URI = 'https://mdsonar.github.io/icowebapp/testApi/src/index.html';
-    const AUTH_URL = 'https://coe-win11-1/fwxserverweb/security/connect/authorize';
-    const TOKEN_URL = 'https://coe-win11-1/fwxserverweb/security/connect/token';
+    const AUTH_URL = 'https://MS-PC/fwxserverweb/security/connect/authorize';
+    const TOKEN_URL = 'https://MS-PC/fwxserverweb/security/connect/token';
     const SCOPE = 'fwxserver offline_access';
-    const API_URL = 'https://coe-win11-1/fwxapi/rest';
+    const API_URL = 'https://MS-PC/fwxapi/rest';
 
     let accessToken = localStorage.getItem("accessToken") || "";
 
@@ -169,7 +169,7 @@
     //API Interaction 
     async function getData(){
     try{
-        const response = await fetch('https://coe-win11-1/fwxapi/rest/data/?pointName=@sim64:Float.Random(1,-50.0,50.0,0).Value',{
+        const response = await fetch('https://MS-PC/fwxapi/rest/data/?pointName=@sim64:Float.Random(1,-50.0,50.0,0).Value',{
             headers:{
                 'Access-Control-Allow-Headers':'*',
                 'Access-Control-Allow-Methods':'GET,POST,OPTIONS',
@@ -188,7 +188,7 @@
 
     async function postData(){
     try{
-        const response = await fetch('https://coe-win11-1/fwxapi/rest/data',{
+        const response = await fetch('https://MS-PC/fwxapi/rest/data',{
             method: 'POST',
             mode: 'cors',
             headers:{
@@ -219,7 +219,7 @@
             return;
         }
         try{
-            const response = await fetch('https://coe-win11-1/fwxapi/rest/data/write',{
+            const response = await fetch('https://MS-PC/fwxapi/rest/data/write',{
                 method: 'POST',
                 headers:{
                     'Content-Type':'application/json',
@@ -241,7 +241,7 @@
 
     async function readDb(){
         try{
-            const response = await fetch('https://coe-win11-1/fwxapi/rest/dataset?PointName=db:Northwind.Orders',{
+            const response = await fetch('https://MS-PC/fwxapi/rest/dataset?PointName=db:Northwind.Orders',{
                 headers:{'Authorization':'Bearer ' + accessToken}
             });
             const result = await response.json();
@@ -267,7 +267,7 @@
 
     async function fetchLiveData(){
     try{
-        const response = await fetch('https://coe-win11-1/fwxapi/rest/data', {
+        const response = await fetch('https://MS-PC/fwxapi/rest/data', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json','Authorization':'Bearer ' + accessToken},
             body: JSON.stringify({
@@ -311,7 +311,7 @@
             }
 
             const point = encodeURIComponent(hhPoint);
-            const response = await fetch(`https://coe-win11-1/fwxapi/rest/history?pointName=${point}&StartDate=${startDate}&EndDate=${endDate}`,{
+            const response = await fetch(`https://MS-PC/fwxapi/rest/history?pointName=${point}&StartDate=${startDate}&EndDate=${endDate}`,{
                 headers:{'Authorization':'Bearer ' + accessToken}
             });
             const data = await response.json();
